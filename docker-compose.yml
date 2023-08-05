@@ -1,0 +1,10 @@
+version: '1'
+
+services:
+  webui-privaxy:
+    container_name: webui-privaxy
+    image: webui-privaxy
+    ports:
+      - "8000:8000"
+      - "8100:8100" 
+      - "8200:8200"

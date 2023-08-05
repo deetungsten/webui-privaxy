@@ -1,0 +1,20 @@
+# Build stage
+FROM rust:latest as builder
+
+# Install dependencies
+RUN apt-get update && apt-get install -y nodejs npm
+RUN rustup target add wasm32-unknown-unknown
+RUN cargo install trunk
+
+# Build frontend
+WORKDIR /app/web_frontend
+COPY web_frontend .
+RUN npm install
+RUN trunk build --release
+
+# Build backend
+WORKDIR /app/privaxy
+COPY privaxy .
+RUN cargo build --release
+
+CMD cargo run --release --bin privaxy
