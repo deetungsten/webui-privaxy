@@ -3,8 +3,10 @@ version: '1'
 services:
   webui-privaxy:
     container_name: webui-privaxy
-    image: webui-privaxy
+    image: ghcr.io/deetungsten/webui-privaxy:latest
     ports:
       - "8000:8000"
-      - "8100:8100" 
+      - "8100:8100"
       - "8200:8200"
+    environment:
+      - IP_ADDRESS=0.0.0.0
