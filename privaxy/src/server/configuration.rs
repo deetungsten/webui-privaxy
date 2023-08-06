@@ -10,6 +10,7 @@ use openssl::{
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, time::Duration};
 use std::{collections::HashSet, path::PathBuf};
+use std::path::Path;
 use thiserror::Error;
 use tokio::sync::{self, mpsc::Sender};
 use tokio::{fs, sync::mpsc::Receiver};
@@ -138,6 +139,10 @@ pub enum ConfigurationError {
 }
 
 impl Configuration {
+
+    const CA_CERT_FILE: &'static str = "/.cache/webui-privaxy/ca_cert.pem";
+    const CA_PRIVATE_KEY_FILE: &'static str = "/.cache/webui-privaxy/ca_private_key.pem";
+    
     pub async fn read_from_home(http_client: reqwest::Client) -> ConfigurationResult<Self> {
         let home_directory = get_home_directory()?;
         let configuration_directory = home_directory.join(CONFIGURATION_DIRECTORY_NAME);
@@ -283,7 +288,18 @@ impl Configuration {
     async fn new_default(http_client: reqwest::Client) -> ConfigurationResult<Self> {
         let default_filters = get_default_filters(http_client).await?;
 
-        let (x509, private_key) = make_ca_certificate();
+        let ca_cert_file = Configuration::CA_CERT_FILE;
+        let ca_private_key_file = Configuration::CA_PRIVATE_KEY_FILE;
+
+        // If the certificate and key files already exist, read them. Otherwise, generate new ones.
+        let (x509, private_key) = if Path::new(ca_cert_file).exists() && Path::new(ca_private_key_file).exists() {
+            (
+                X509::from_pem(&fs::read(ca_cert_file).await?).unwrap(),
+                PKey::private_key_from_pem(&fs::read(ca_private_key_file).await?).unwrap(),
+            )
+        } else {
+            make_ca_certificate()
+        };
 
         let x509_pem = std::str::from_utf8(&x509.to_pem().unwrap())
             .unwrap()
@@ -292,6 +308,10 @@ impl Configuration {
         let private_key_pem = std::str::from_utf8(&private_key.private_key_to_pem_pkcs8().unwrap())
             .unwrap()
             .to_string();
+
+        // Save the certificate and key to the hardcoded paths
+        fs::write(ca_cert_file, &x509_pem).await?;
+        fs::write(ca_private_key_file, &private_key_pem).await?;
 
         Ok(Configuration {
             filters: default_filters

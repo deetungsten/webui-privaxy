@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y nodejs npm
 
 RUN cargo install trunk
 
+# Create mount point for certificates  
+VOLUME /.cache/webui-privaxy
+
 # Set working directory
 WORKDIR /app
 
