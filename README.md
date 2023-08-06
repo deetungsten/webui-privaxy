@@ -1,8 +1,8 @@
-This repository contains a fork of [Privaxy](https://github.com/Barre/privaxy) v0.3.1 that has been dockerized and pushed to GitHub Container Registry (ghcr) for easy deployment. The main purpose is to maintain the web UI functionality from the original Privaxy v0.3.1 release. By containerizing Privaxy, it can now be easily run on a server using the ghcr image.
+This repository contains a fork of [Privaxy](https://github.com/Barre/privaxy) v0.3.1 that has been dockerized and pushed to GHCR with Github Actions located [here](https://github.com/deetungsten/webui-privaxy/pkgs/container/webui-privaxy). The main purpose is to maintain the web UI functionality from the original Privaxy v0.3.1 release. By containerizing Privaxy, it can now be easily run on a server or locally without installing the npm related tools.
 
 ## Installation and Usage
 
-The front end code expects the `IP_ADDRESS` environment variable to be defined, otherwise it will default to `0.0.0.0` which will break functionality. To use the web portal remotely, be sure to define `IP_ADDRESS` to the host computer's address. This is required for the front end components like certificate links to work properly. The back end proxy server will still function without IP_ADDRESS defined, but the front end will be broken
+The front end code expects the `IP_ADDRESS` environment variable to be defined, otherwise it will default to `0.0.0.0` which will break functionality when used remotely. The `IP_ADDRESS` variable should be set to the IP address of the server running the container. This can be defined either in the `docker-compose.yml` file, when running the container manually with docker run, or as an environment variable when using the prebuilt image.
 
 ### Using prebuilt docker image
 
@@ -11,7 +11,7 @@ The front end code expects the `IP_ADDRESS` environment variable to be defined, 
 
 ### Local
 
-1.  ` docker build -t webui-privaxy .`
+1.  `docker build -t webui-privaxy .`
 2.  (Optional) `export IP_ADDRESS=<SERVER IP ADDRESS>`
 3.  ```bash
     docker run -d \
