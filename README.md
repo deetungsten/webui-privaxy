@@ -1,3 +1,5 @@
+# webui-privaxy
+
 This repository contains a fork of [Privaxy](https://github.com/Barre/privaxy) v0.3.1 that has been dockerized and pushed to GHCR with Github Actions located [here](https://github.com/deetungsten/webui-privaxy/pkgs/container/webui-privaxy). The main purpose is to maintain the web UI functionality from the original Privaxy v0.3.1 release. By containerizing Privaxy, it can now be easily run on a server or locally without installing the npm related tools.
 
 ## Installation and Usage
