@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y nodejs npm
 
 RUN cargo install trunk
 
-# Create mount point for certificates  
+# Create mount point for certificates
 VOLUME /.cache/webui-privaxy
 
 # Set working directory
@@ -21,7 +21,7 @@ COPY . /app
 RUN cd web_frontend && npm i && npm install -g trunk && trunk build --release
 
 # Build the server
-RUN cd privaxy && cargo build --release
+RUN cd privaxy && cargo build --release --bin privaxy
 
-# Set the entrypoint to run privaxy
-CMD cargo run --release --bin privaxy
+# Set the entrypoint to run the precompiled privaxy binary
+CMD ["/app/target/release/privaxy"]
