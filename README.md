@@ -4,6 +4,10 @@ This repository contains a fork of [Privaxy](https://github.com/Barre/privaxy) v
 
 The front end code expects the `IP_ADDRESS` environment variable to be defined, otherwise it will default to `0.0.0.0` which will break functionality when used remotely. The `IP_ADDRESS` variable should be set to the IP address of the server running the container. This can be defined either in the `docker-compose.yml` file, when running the container manually with docker run, or as an environment variable when using the prebuilt image.
 
+### Persistence
+
+Since everything is dockerized, the cert and keys need to stored somewhere so that new ones do not get generated when you restart an image. The codebase is modified to save the files in `/.cache/webui-privaxy`. You can mount any local folder or volume to that location. If you ever find the need to generate a fresh set of certificates and keys, you can do so by simply deleting this folder in your local environment.
+
 ### Using prebuilt docker image
 
 1. Change the IP address to your server IP address `docker-compose.yml`
@@ -20,6 +24,7 @@ The front end code expects the `IP_ADDRESS` environment variable to be defined, 
        -p 8100:8100 \
        -p 8200:8200 \
        -e "IP_ADDRESS=<SERVER IP ADDRESS>"
+       -v $HOME/.cache/webui-privaxy:/.cache/webui-privaxy
        webui-privaxy
     ```
 

@@ -1,8 +1,10 @@
-version: '1'
+version: '3'
 
 services:
   webui-privaxy:
     container_name: webui-privaxy
+    volumes:
+      - $HOME/.cache/webui-privaxy:/.cache/webui-privaxy
     image: ghcr.io/deetungsten/webui-privaxy:latest
     ports:
       - "8000:8000"
