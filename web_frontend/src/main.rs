@@ -12,11 +12,13 @@ mod settings;
 mod settings_textarea;
 mod submit_banner;
 
-static mut API_HOST: String = String::new();
+const DEFAULT_API_HOST: &str = "0.0.0.0";
 
 pub fn get_api_host() -> &'static str {
-    // `API_HOST` is only mutated at app start.
-    unsafe { API_HOST.as_str() }
+    match std::env::var("IP_ADDRESS") {
+        Ok(ip_address) => ip_address.as_str(),
+        Err(_) => DEFAULT_API_HOST,
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Routable)]
