@@ -37,33 +37,36 @@ const RUST_LOG_ENV_KEY: &str = "RUST_LOG";
 
 // Helper function to parse the IP address string into an array of u8
 fn parse_ip_address(ip_str: &str) -> [u8; 4] {
-    let mut ip: [u8; 4] = [0, 0, 0, 0];
+    let mut server_ip: [u8; 4] = [0, 0, 0, 0];
     let parts: Vec<&str> = ip_str.split('.').collect();
     for (i, part) in parts.iter().enumerate() {
         if let Ok(num) = part.parse::<u8>() {
-            ip[i] = num;
+            server_ip[i] = num;
         }
     }
-    ip
+    server_ip
 }
 
 #[tokio::main]
 async fn main() {
 
     // Declare the ip variable outside the match block
-    let ip: [u8; 4];
+    let server_ip: [u8; 4];
 
     match env::var("IP_ADDRESS") {
         Ok(val) => {
             // Parse the IP address from the environment variable string
-            ip = parse_ip_address(&val);
+            server_ip = parse_ip_address(&val);
         }
         Err(_) => {
             // Set a default IP address
-            ip = [0, 0, 0, 0];
+            server_ip = [0, 0, 0, 0];
         }
     }
 
+    // 0.0.0.0 bind to all interfaces for Docker
+
+    ip = [0, 0, 0, 0];
 
     // We way need more logs to perform debugging or troubleshooting.
     // Let's only set default logging when "RUST_LOG" is not already set.
@@ -219,7 +222,7 @@ async fn main() {
         .tcp_keepalive(Some(Duration::from_secs(600)))
         .serve(make_service);
 
-    let web_gui_static_files_server_addr = SocketAddr::from((ip, 8000));
+    let web_gui_static_files_server_addr = SocketAddr::from((server_ip, 8000));
 
     web_gui::start_web_gui_static_files_server(
         web_gui_static_files_server_addr,
