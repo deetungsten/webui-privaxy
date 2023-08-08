@@ -66,7 +66,7 @@ async fn main() {
 
     // 0.0.0.0 bind to all interfaces for Docker
 
-    ip = [0, 0, 0, 0];
+    let ip = [0, 0, 0, 0];
 
     // We way need more logs to perform debugging or troubleshooting.
     // Let's only set default logging when "RUST_LOG" is not already set.
