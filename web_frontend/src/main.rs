@@ -12,17 +12,11 @@ mod settings;
 mod settings_textarea;
 mod submit_banner;
 
-const DEFAULT_API_HOST: &str = "0.0.0.0";
-
-pub static mut API_HOST: String = DEFAULT_API_HOST.to_string();
+static mut API_HOST: String = String::new();
 
 pub fn get_api_host() -> &'static str {
-    unsafe {
-        if let Ok(ip_address) = std::env::var("IP_ADDRESS") {
-            API_HOST = ip_address;
-        }
-        API_HOST.as_str()
-    }
+    // `API_HOST` is only mutated at app start.
+    unsafe { API_HOST.as_str() }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Routable)]
@@ -127,14 +121,7 @@ fn switch(route: &Route) -> Html {
 fn app() -> Html {
     let document = gloo_utils::document();
 
-    let api_host = document
-        .query_selector("meta[name=\"api_host\"]")
-        .unwrap()
-        .unwrap()
-        .attributes()
-        .get_named_item("content")
-        .unwrap()
-        .value();
+    let api_host = std::env::var("IP_ADDRESS");
 
     // We are only mutating this variable before the start of the app.
     unsafe {
