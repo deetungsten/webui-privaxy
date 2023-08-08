@@ -14,14 +14,14 @@ mod submit_banner;
 
 const DEFAULT_API_HOST: &str = "0.0.0.0";
 
-pub static mut API_HOST: &str = DEFAULT_API_HOST;
+pub static mut API_HOST: String = DEFAULT_API_HOST.to_string();
 
 pub fn get_api_host() -> &'static str {
     unsafe {
         if let Ok(ip_address) = std::env::var("IP_ADDRESS") {
-            API_HOST = ip_address.as_str();
+            API_HOST = ip_address;
         }
-        API_HOST
+        API_HOST.as_str()
     }
 }
 
