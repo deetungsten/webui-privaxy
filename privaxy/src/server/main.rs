@@ -222,11 +222,13 @@ async fn main() {
         .tcp_keepalive(Some(Duration::from_secs(600)))
         .serve(make_service);
 
-    let web_gui_static_files_server_addr = SocketAddr::from((server_ip, 8000));
+    let web_gui_static_files_server_addr = SocketAddr::from((ip, 8000));
+
+    let web_gui_server_addr_external = SocketAddr::from((server_ip, 8000));
 
     web_gui::start_web_gui_static_files_server(
         web_gui_static_files_server_addr,
-        web_gui_server_addr,
+        web_gui_server_addr_external,
     );
 
     log::info!("Proxy available at http://{}", proxy_server_addr);
