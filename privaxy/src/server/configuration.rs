@@ -23,7 +23,7 @@ const CONFIGURATION_FILE_NAME: &str = "config";
 const FILTERS_DIRECTORY_NAME: &str = "filters";
 
 // Update filters every 10 minutes.
-const FILTERS_UPDATE_AFTER: Duration = Duration::from_secs(60 * 10);
+const FILTERS_UPDATE_AFTER: Duration = Duration::from_secs(60 * 60 * 24);
 
 type ConfigurationResult<T> = Result<T, ConfigurationError>;
 
