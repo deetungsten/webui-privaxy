@@ -14,8 +14,9 @@ Since everything is dockerized, the cert and keys need to stored somewhere so th
 
 ### Using prebuilt docker image
 
-1. Change the IP address to your server IP address `docker-compose.yml`
-2. `docker-compose up`
+1. Copy docker-compose.yml from github repository
+2. Change the IP address to your server IP address `docker-compose.yml`
+3. `docker compose up` or `docker compose up -d`
 
 ### Local
 
