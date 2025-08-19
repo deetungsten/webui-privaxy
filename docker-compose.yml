@@ -6,6 +6,8 @@ services:
     volumes:
       - $HOME/.cache/webui-privaxy:/.cache/webui-privaxy
     image: ghcr.io/deetungsten/webui-privaxy:latest
-    network_mode: "host"
-    environment:
-      - IP_ADDRESS=0.0.0.0
+    ports:
+      - "8000:8000"  # Web GUI
+      - "8100:8100"  # Proxy server
+      - "8200:8200"  # Web GUI API server
+    # No IP_ADDRESS needed - will auto-detect using window.location.hostname

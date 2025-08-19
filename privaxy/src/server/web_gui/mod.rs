@@ -22,7 +22,7 @@ pub(crate) struct ApiError {
     error: String,
 }
 
-pub(crate) fn start_web_gui_static_files_server(bind: SocketAddr, api_addr: SocketAddr) {
+pub(crate) fn start_web_gui_static_files_server(bind: SocketAddr, api_host: String) {
     let filter = warp::get().and(warp::path::tail()).map(move |tail: Tail| {
         let tail_str = tail.as_str();
 
@@ -43,7 +43,16 @@ pub(crate) fn start_web_gui_static_files_server(bind: SocketAddr, api_addr: Sock
         let file_contents = if is_index {
             let index_utf8 = String::from_utf8(file_contents).unwrap();
 
-            Vec::from(index_utf8.replace("{#api_host#}", &api_addr.to_string()))
+            // Replace the API host placeholder with either the configured host or JavaScript detection
+            let final_content = if api_host == "{{CURRENT_HOST}}:8200" {
+                // If using placeholder, replace with JavaScript that detects the current host
+                index_utf8.replace("{#api_host#}", "\" + window.location.hostname + \":8200")
+            } else {
+                // Use the configured API host
+                index_utf8.replace("{#api_host#}", &api_host)
+            };
+
+            Vec::from(final_content)
         } else {
             file_contents
         };

@@ -47,22 +47,24 @@ fn parse_ip_address(ip_str: &str) -> [u8; 4] {
     ip
 }
 
+
 #[tokio::main]
 async fn main() {
 
-    // Declare the ip variable outside the match block
-    let ip: [u8; 4];
-
-    match env::var("IP_ADDRESS") {
+    // Always bind to 0.0.0.0 to accept connections from all interfaces
+    let bind_ip: [u8; 4] = [0, 0, 0, 0];
+    
+    // For the frontend API host, use the IP_ADDRESS env var if set, otherwise use window.location.host
+    let frontend_api_host = match env::var("IP_ADDRESS") {
         Ok(val) => {
-            // Parse the IP address from the environment variable string
-            ip = parse_ip_address(&val);
+            // If IP_ADDRESS is set, use it for the frontend API host
+            format!("{}:8200", val)
         }
         Err(_) => {
-            // Set a default IP address
-            ip = [0, 0, 0, 0];
+            // If no IP_ADDRESS is set, use a placeholder that will be replaced by JavaScript
+            "{{CURRENT_HOST}}:8200".to_string()
         }
-    }
+    };
 
 
     // We way need more logs to perform debugging or troubleshooting.
@@ -148,7 +150,7 @@ async fn main() {
 
     let configuration_save_lock = Arc::new(tokio::sync::Mutex::new(()));
 
-    let web_gui_server_addr = SocketAddr::from((ip, 8200));
+    let web_gui_server_addr = SocketAddr::from((bind_ip, 8200));
 
     web_gui::start_web_gui_server(
         broadcast_tx.clone(),
@@ -211,7 +213,7 @@ async fn main() {
         }
     });
 
-    let proxy_server_addr = SocketAddr::from((ip, 8100));
+    let proxy_server_addr = SocketAddr::from((bind_ip, 8100));
 
     let server = Server::bind(&proxy_server_addr)
         .http1_preserve_header_case(true)
@@ -219,11 +221,11 @@ async fn main() {
         .tcp_keepalive(Some(Duration::from_secs(600)))
         .serve(make_service);
 
-    let web_gui_static_files_server_addr = SocketAddr::from((ip, 8000));
+    let web_gui_static_files_server_addr = SocketAddr::from((bind_ip, 8000));
 
     web_gui::start_web_gui_static_files_server(
         web_gui_static_files_server_addr,
-        web_gui_server_addr,
+        frontend_api_host,
     );
 
     log::info!("Proxy available at http://{}", proxy_server_addr);
